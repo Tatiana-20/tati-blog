@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { PostModule } from './modules/post/post.module';
 import { ReactionModule } from './modules/reaction/reaction.module';
 import { CommentModule } from './modules/comment/comment.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { CommentModule } from './modules/comment/comment.module';
     PostModule,
     ReactionModule,
     CommentModule,
+    NotificationsModule,
   ],
   controllers: [],
   providers: [],

@@ -9,12 +9,14 @@ import { Repository } from 'typeorm';
 import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 import { Reaction } from './entities/reaction.entity';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
 export class ReactionService {
   constructor(
     @InjectRepository(Reaction)
     private readonly reactionRepository: Repository<Reaction>,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(createReactionDto: CreateReactionDto): Promise<Reaction> {
@@ -35,7 +37,16 @@ export class ReactionService {
       } else {
         // Si no existe, crear una nueva reacción
         const newReaction = this.reactionRepository.create(createReactionDto);
-        return await this.reactionRepository.save(newReaction);
+        const savedReaction = await this.reactionRepository.save(newReaction);
+        this.notificationsGateway.sendPostUpdate(
+          savedReaction.post.id.toString(),
+          {
+            type: 'reactionAdded',
+            reaction: savedReaction,
+            postId: savedReaction.post.id,
+          },
+        );
+        return savedReaction;
       }
     } catch (error) {
       throw new InternalServerErrorException(

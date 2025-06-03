@@ -5,9 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Comment } from './entities/comment.entity';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Comment]), AuthModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Comment]),
+    AuthModule,
+    UsersModule,
+    NotificationsModule,
+  ],
   controllers: [CommentController],
   providers: [CommentService],
   exports: [TypeOrmModule],

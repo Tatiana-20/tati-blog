@@ -5,9 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Reaction } from './entities/reaction.entity';
 import { AuthModule } from '../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Reaction]), AuthModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([Reaction]),
+    AuthModule,
+    UsersModule,
+    NotificationsModule,
+  ],
   controllers: [ReactionController],
   providers: [ReactionService],
   exports: [TypeOrmModule],

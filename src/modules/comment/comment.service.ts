@@ -8,18 +8,34 @@ import { Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
     try {
       const newComment = this.commentRepository.create(createCommentDto);
-      return await this.commentRepository.save(newComment);
+      const savedComment = await this.commentRepository.save(newComment);
+
+      // Asumiendo que createCommentDto.postId existe o se puede obtener del savedComment
+      // Necesitarás asegurarte de que el postId esté disponible aquí.
+      // Si el Comment entity tiene una relación con Post, puedes acceder a savedComment.post.id
+      this.notificationsGateway.sendPostUpdate(
+        savedComment.post.id.toString(),
+        {
+          type: 'commentAdded',
+          comment: savedComment,
+          postId: savedComment.post.id,
+        },
+      );
+
+      return savedComment;
     } catch (error) {
       throw new InternalServerErrorException(
         `Error al crear el comentario: ${error.message}`,

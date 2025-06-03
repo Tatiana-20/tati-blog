@@ -139,4 +139,37 @@ export class AuthService {
       access_token: token,
     };
   }
+
+  async validateToken(token: string): Promise<any> {
+    try {
+      const decoded = this.jwtService.decode(token) as {
+        sub: number;
+        email: string;
+        rol: string;
+      };
+      if (!decoded || !decoded.sub) {
+        throw new UnauthorizedException(
+          'Token inválido: no se pudo decodificar el ID de usuario.',
+        );
+      }
+
+      const user = await this.usersService.findOne(decoded.sub);
+      if (!user) {
+        throw new UnauthorizedException(
+          'Token inválido: usuario no encontrado.',
+        );
+      }
+
+      const verified = this.jwtService.verify(token, {
+        secret: process.env.JWT_SECRET + user.user_secret,
+      });
+
+      return verified;
+    } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
+      throw new UnauthorizedException(`Token inválido: ${error.message}`);
+    }
+  }
 }

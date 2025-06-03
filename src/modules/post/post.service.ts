@@ -9,12 +9,14 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
 import slugify from 'slugify';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
+    private readonly notificationsGateway: NotificationsGateway,
   ) {}
 
   private async __prepareAndValidateDto(
@@ -47,7 +49,9 @@ export class PostService {
     try {
       const postData = await this.__prepareAndValidateDto(createPostDto);
       const newPost = this.postRepository.create(postData);
-      return await this.postRepository.save(newPost);
+      const savedPost = await this.postRepository.save(newPost);
+      this.notificationsGateway.sendNewPostNotification();
+      return savedPost;
     } catch (error) {
       throw new InternalServerErrorException(
         `Error al crear la publicación: ${error.message}`,
