@@ -24,13 +24,12 @@ import {
 } from '@nestjs/swagger';
 
 @ApiTags('Reactions')
-@Controller('reactions') // Cambiado a 'reactions' para ser más RESTful
+@Controller('reactions')
 export class ReactionController {
   constructor(private readonly reactionService: ReactionService) {}
 
   @Post()
-  @Auth(Role.USER) // Solo usuarios autenticados pueden crear reacciones
-  @ApiBearerAuth() // Documenta que este endpoint requiere un token JWT
+  @Auth([Role.USER, Role.ADMIN])
   @ApiOperation({ summary: 'Crear una nueva reacción a una publicación' })
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -50,7 +49,7 @@ export class ReactionController {
   ) {
     return await this.reactionService.create({
       ...createReactionDto,
-      userId: user.id, // Asigna el ID del usuario autenticado
+      userId: user.id,
     });
   }
 
@@ -79,7 +78,7 @@ export class ReactionController {
   }
 
   @Patch(':id')
-  @Auth(Role.USER) // Solo usuarios autenticados pueden actualizar sus reacciones
+  @Auth([Role.USER, Role.ADMIN])
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Actualizar una reacción existente' })
   @ApiResponse({
@@ -101,7 +100,6 @@ export class ReactionController {
   ) {
     const reaction = await this.reactionService.findOne(+id);
     if (reaction.user.id !== user.id && user.role !== Role.ADMIN) {
-      // Corregido a reaction.user.id
       throw new HttpException(
         'No tienes permiso para actualizar esta reacción.',
         HttpStatus.FORBIDDEN,
@@ -111,7 +109,7 @@ export class ReactionController {
   }
 
   @Delete(':id')
-  @Auth(Role.USER) // Solo el autor o un administrador pueden eliminar la reacción
+  @Auth([Role.USER, Role.ADMIN])
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Eliminar una reacción' })
   @ApiResponse({
@@ -133,7 +131,6 @@ export class ReactionController {
   async remove(@Param('id') id: string, @GetUser() user: User) {
     const reaction = await this.reactionService.findOne(+id);
     if (reaction.user.id !== user.id && user.role !== Role.ADMIN) {
-      // Corregido a reaction.user.id
       throw new HttpException(
         'No tienes permiso para eliminar esta reacción.',
         HttpStatus.FORBIDDEN,

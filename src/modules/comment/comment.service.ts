@@ -1,26 +1,90 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Comment } from './entities/comment.entity';
 
 @Injectable()
 export class CommentService {
-  create(createCommentDto: CreateCommentDto) {
-    return 'This action adds a new comment';
+  constructor(
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
+  ) {}
+
+  async create(createCommentDto: CreateCommentDto): Promise<Comment> {
+    try {
+      const newComment = this.commentRepository.create(createCommentDto);
+      return await this.commentRepository.save(newComment);
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error al crear el comentario: ${error.message}`,
+      );
+    }
   }
 
-  findAll() {
-    return `This action returns all comment`;
+  async findAll(): Promise<Comment[]> {
+    try {
+      return await this.commentRepository.find();
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error al obtener los comentarios: ${error.message}`,
+      );
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
+  async findOne(id: number): Promise<Comment> {
+    try {
+      const comment = await this.commentRepository.findOne({ where: { id } });
+      if (!comment) {
+        throw new NotFoundException(`Comentario con ID ${id} no encontrado.`);
+      }
+      return comment;
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error al obtener el comentario: ${error.message}`,
+      );
+    }
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
+  async update(
+    id: number,
+    updateCommentDto: UpdateCommentDto,
+  ): Promise<Comment> {
+    try {
+      const comment = await this.findOne(id); // Reutiliza findOne para verificar existencia
+      Object.assign(comment, updateCommentDto);
+      return await this.commentRepository.save(comment);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error al actualizar el comentario: ${error.message}`,
+      );
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async remove(id: number): Promise<void> {
+    try {
+      const result = await this.commentRepository.delete(id);
+      if (result.affected === 0) {
+        throw new NotFoundException(`Comentario con ID ${id} no encontrado.`);
+      }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Error al eliminar el comentario: ${error.message}`,
+      );
+    }
   }
 }
