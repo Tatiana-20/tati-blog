@@ -10,6 +10,8 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Post } from './entities/post.entity';
 import slugify from 'slugify';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { PostStatus } from 'src/common/enum/post-status';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class PostService {
@@ -17,13 +19,15 @@ export class PostService {
     @InjectRepository(Post)
     private readonly postRepository: Repository<Post>,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly userService: UsersService,
   ) {}
 
   private async __prepareAndValidateDto(
     dto: CreatePostDto | UpdatePostDto,
     id?: number,
   ): Promise<Partial<Post>> {
-    const postData: Partial<Post> = { ...dto };
+    const author = await this.userService.findOne(dto.authorId);
+    const postData: Partial<Post> = { ...dto, author };
 
     if (dto.title) {
       postData.slug = slugify(dto.title, { lower: true, strict: true });
@@ -46,9 +50,13 @@ export class PostService {
   }
 
   async create(createPostDto: CreatePostDto): Promise<Post> {
+    const postData = await this.__prepareAndValidateDto(createPostDto);
+    const newPost = this.postRepository.create({
+      ...postData,
+      status: PostStatus.PUBLISHED,
+    });
+    console.log(newPost);
     try {
-      const postData = await this.__prepareAndValidateDto(createPostDto);
-      const newPost = this.postRepository.create(postData);
       const savedPost = await this.postRepository.save(newPost);
       this.notificationsGateway.sendNewPostNotification();
       return savedPost;

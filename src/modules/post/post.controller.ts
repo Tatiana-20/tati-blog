@@ -37,11 +37,8 @@ export class PostController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Datos de entrada inválidos.',
   })
-  async create(@Body() createPostDto: CreatePostDto, @GetUser() user: User) {
-    return await this.postService.create({
-      ...createPostDto,
-      authorId: user.id,
-    });
+  async create(@Body() createPostDto: CreatePostDto) {
+    return await this.postService.create(createPostDto);
   }
 
   @Get()
