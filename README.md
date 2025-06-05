@@ -1,73 +1,60 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# 🚀 Backend de la Aplicación: Potenciando tu Experiencia
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este es el corazón de nuestra aplicación, un robusto backend construido con **NestJS**, un framework progresivo de Node.js. Diseñado para ser eficiente y escalable, este servicio proporciona una **API RESTful** completa para gestionar todos los datos de la aplicación, asegurando una interacción fluida y segura.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## ✨ Endpoints Principales
 
-## Description
+Nuestra API está estructurada para ofrecer una interacción clara y potente con los recursos de la aplicación. Aquí te presentamos los módulos clave:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- `/auth`: **Autenticación y Autorización** de usuarios.
+- `/users`: Operaciones **CRUD** para la gestión de usuarios.
+- `/posts`: Control total sobre las **publicaciones**.
+- `/comments`: Gestión de **comentarios** asociados a las publicaciones.
+- `/reactions`: Manejo de **reacciones** a publicaciones y comentarios.
 
-## Installation
+Para una exploración exhaustiva y detallada de todos los endpoints, te invitamos a consultar nuestra **documentación interactiva de Swagger**. Una vez que el servidor esté en funcionamiento, podrás acceder a ella en:
+[http://localhost:3000/api/docs](http://localhost:3000/api/docs)
+
+## 🛠️ Instalación Rápida
+
+Para poner en marcha este backend, asegúrate de tener **pnpm** instalado globalmente. Si aún no lo tienes, puedes instalarlo fácilmente con npm:
 
 ```bash
-$ pnpm install
+npm install -g pnpm
 ```
 
-## Running the app
+Una vez que pnpm esté listo, sigue estos sencillos pasos para instalar todas las dependencias del proyecto:
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+pnpm install
 ```
 
-## Test
+## ▶️ Ejecución de la Aplicación
+
+Inicia el servidor en diferentes modos según tus necesidades:
 
 ```bash
-# unit tests
-$ pnpm run test
+# Modo desarrollo
+pnpm run start
 
-# e2e tests
-$ pnpm run test:e2e
+# Modo vigilancia (watch mode)
+pnpm run start:dev
 
-# test coverage
-$ pnpm run test:cov
+# Modo producción
+pnpm run start:prod
 ```
 
-## Support
+## 🧪 Pruebas
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Asegura la calidad del código con nuestras pruebas:
 
-## Stay in touch
+```bash
+# Pruebas unitarias
+pnpm run test
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Pruebas e2e
+pnpm run test:e2e
 
-## License
-
-Nest is [MIT licensed](LICENSE).
+# Cobertura de pruebas
+pnpm run test:cov
+```

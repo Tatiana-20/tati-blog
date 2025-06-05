@@ -13,15 +13,12 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post('register/:token')
+  @Post('register')
   @ApiOperation({ summary: 'Registrar un nuevo usuario' })
   @ApiResponse({ status: 200, description: 'Usuario registrado con éxito' })
   @ApiResponse({ status: 400, description: 'Error al registrar el usuario' })
   @ApiResponse({ status: 404, description: 'Invitación no encontrada' })
-  async register(
-    @Param('token') token: string,
-    @Body() createUserDto: CreateUserDto,
-  ) {
+  async register(@Body() createUserDto: CreateUserDto) {
     return await this.authService.register(createUserDto);
   }
 
@@ -74,7 +71,6 @@ export class AuthController {
   }
 
   @Get('refresh-token/:token')
-  //   @Auth()
   @ApiOperation({ summary: 'Renovar token' })
   @ApiResponse({ status: 200, description: 'Token renovado con éxito' })
   @ApiResponse({ status: 400, description: 'Error al renovar el token' })
@@ -83,9 +79,9 @@ export class AuthController {
     return await this.authService.refreshToken(token);
   }
 
-  @Get('profile')
-  //   @Auth()
-  async profile() {
-    return 'Profile';
-  }
+  // @Get('profile')
+  // //   @Auth()
+  // async profile() {
+  //   return 'Profile';
+  // }
 }

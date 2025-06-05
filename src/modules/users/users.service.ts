@@ -30,9 +30,11 @@ export class UsersService {
       })
     );
 
+    const create = await this.__PrepareAndValidateUserDto(createUserDto);
+
     try {
       return await this.usersRepository.save({
-        ...(await this.__PrepareAndValidateUserDto(createUserDto)),
+        ...create,
         role: Role.USER,
         activation_token,
       });
@@ -117,11 +119,9 @@ export class UsersService {
 
   async update(id: number, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
+    const update = await this.__PrepareAndValidateUserDto(updateUserDto, id);
     try {
-      await this.usersRepository.update(
-        id,
-        await this.__PrepareAndValidateUserDto(updateUserDto, id),
-      );
+      await this.usersRepository.update(id, update);
       return await this.findOne(id);
     } catch (error) {
       throw new InternalServerErrorException(

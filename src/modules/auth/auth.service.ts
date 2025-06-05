@@ -35,12 +35,16 @@ export class AuthService {
       },
     );
 
-    return 'Usuario registrado con éxito, por favor revisa tu correo para activar tu cuenta';
+    return {
+      message:
+        'Usuario registrado con éxito, por favor revisa tu correo para activar tu cuenta',
+      statusCode: 201,
+    };
   }
 
   async activate(token: string) {
     await this.usersService.activateUser(token);
-    return 'Cuenta activada con éxito';
+    return { message: 'Cuenta activada con éxito', statusCode: 200 };
   }
 
   async passwordRecovery(passwordRecoveryDto: PasswordRecoveryDto) {
@@ -60,7 +64,10 @@ export class AuthService {
       },
     );
 
-    return 'Por favor revisa tu correo para restablecer tu contraseña';
+    return {
+      message: 'Por favor revisa tu correo para restablecer tu contraseña',
+      statusCode: 200,
+    };
   }
 
   async passwordRecoveryToken(
@@ -77,7 +84,7 @@ export class AuthService {
       resetPasswordDto.password,
     );
 
-    return 'Contraseña restablecida con éxito';
+    return { message: 'Contraseña restablecida con éxito', statusCode: 200 };
   }
 
   async login(loginDto: LoginDto) {
@@ -92,6 +99,11 @@ export class AuthService {
 
     if (!isPasswordValid)
       throw new UnauthorizedException('La contraseña es incorrecta');
+
+    if (!user.is_active)
+      throw new UnauthorizedException(
+        'Por favor, dirígete a tu correo para verificar tu cuenta',
+      );
 
     const payload = {
       sub: user.id,
