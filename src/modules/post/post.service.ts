@@ -79,7 +79,10 @@ export class PostService {
 
   async findOne(id: number): Promise<Post> {
     try {
-      const post = await this.postRepository.findOne({ where: { id } });
+      const post = await this.postRepository.findOne({
+        where: { id },
+        relations: ['comments', 'comments.user', 'reactions', 'reactions.user'], // Incluir comentarios, sus usuarios, reacciones y sus usuarios
+      });
       if (!post) {
         throw new NotFoundException(`Publicación con ID ${id} no encontrada.`);
       }

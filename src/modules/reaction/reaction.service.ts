@@ -2,7 +2,6 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
-  // ConflictException, // Eliminado si no se usa
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,6 +9,8 @@ import { CreateReactionDto } from './dto/create-reaction.dto';
 import { UpdateReactionDto } from './dto/update-reaction.dto';
 import { Reaction } from './entities/reaction.entity';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { PostService } from '../post/post.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class ReactionService {
@@ -17,26 +18,30 @@ export class ReactionService {
     @InjectRepository(Reaction)
     private readonly reactionRepository: Repository<Reaction>,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly userService: UsersService,
+    private readonly postService: PostService,
   ) {}
 
   async create(createReactionDto: CreateReactionDto): Promise<Reaction> {
+    const user = await this.userService.findOne(createReactionDto.userId);
+    const post = await this.postService.findOne(createReactionDto.postId);
     try {
-      // Verificar si ya existe una reacción del mismo usuario en el mismo post
       const existingReaction = await this.reactionRepository.findOne({
-        // Cambiado a const
         where: {
-          user: { id: createReactionDto.userId }, // Acceder al ID del usuario a través de la relación
-          post: { id: createReactionDto.postId }, // Acceder al ID del post a través de la relación
+          user: { id: createReactionDto.userId },
+          post: { id: createReactionDto.postId },
         },
       });
 
       if (existingReaction) {
-        // Si ya existe, actualizar la reacción existente
         existingReaction.type = createReactionDto.type;
         return await this.reactionRepository.save(existingReaction);
       } else {
-        // Si no existe, crear una nueva reacción
-        const newReaction = this.reactionRepository.create(createReactionDto);
+        const newReaction = this.reactionRepository.create({
+          ...createReactionDto,
+          user: user,
+          post: post,
+        });
         const savedReaction = await this.reactionRepository.save(newReaction);
         this.notificationsGateway.sendPostUpdate(
           savedReaction.post.id.toString(),
@@ -87,7 +92,7 @@ export class ReactionService {
     updateReactionDto: UpdateReactionDto,
   ): Promise<Reaction> {
     try {
-      const reaction = await this.findOne(id); // Reutiliza findOne para verificar existencia
+      const reaction = await this.findOne(id);
       Object.assign(reaction, updateReactionDto);
       return await this.reactionRepository.save(reaction);
     } catch (error) {

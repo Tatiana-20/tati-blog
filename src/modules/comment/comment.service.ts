@@ -9,6 +9,8 @@ import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Comment } from './entities/comment.entity';
 import { NotificationsGateway } from '../notifications/notifications.gateway';
+import { UsersService } from '../users/users.service';
+import { PostService } from '../post/post.service';
 
 @Injectable()
 export class CommentService {
@@ -16,16 +18,21 @@ export class CommentService {
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
     private readonly notificationsGateway: NotificationsGateway,
+    private readonly userService: UsersService,
+    private readonly postService: PostService,
   ) {}
 
   async create(createCommentDto: CreateCommentDto): Promise<Comment> {
+    const user = await this.userService.findOne(createCommentDto.userId);
+    const post = await this.postService.findOne(createCommentDto.postId);
+    const newComment = this.commentRepository.create({
+      ...createCommentDto,
+      user: user,
+      post: post,
+    });
     try {
-      const newComment = this.commentRepository.create(createCommentDto);
       const savedComment = await this.commentRepository.save(newComment);
 
-      // Asumiendo que createCommentDto.postId existe o se puede obtener del savedComment
-      // Necesitarás asegurarte de que el postId esté disponible aquí.
-      // Si el Comment entity tiene una relación con Post, puedes acceder a savedComment.post.id
       this.notificationsGateway.sendPostUpdate(
         savedComment.post.id.toString(),
         {

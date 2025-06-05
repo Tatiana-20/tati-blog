@@ -43,14 +43,8 @@ export class ReactionController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Datos de entrada inválidos.',
   })
-  async create(
-    @Body() createReactionDto: CreateReactionDto,
-    @GetUser() user: User,
-  ) {
-    return await this.reactionService.create({
-      ...createReactionDto,
-      userId: user.id,
-    });
+  async create(@Body() createReactionDto: CreateReactionDto) {
+    return await this.reactionService.create(createReactionDto);
   }
 
   @Get()

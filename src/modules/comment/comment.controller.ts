@@ -43,14 +43,8 @@ export class CommentController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Datos de entrada inválidos.',
   })
-  async create(
-    @Body() createCommentDto: CreateCommentDto,
-    @GetUser() user: User,
-  ) {
-    return await this.commentService.create({
-      ...createCommentDto,
-      userId: user.id,
-    });
+  async create(@Body() createCommentDto: CreateCommentDto) {
+    return await this.commentService.create(createCommentDto);
   }
 
   @Get()
